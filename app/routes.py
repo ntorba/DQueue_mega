@@ -149,8 +149,8 @@ def unfollow(username):
 @app.route('/party/<party_id>', methods = ['GET', 'POST'])
 @login_required
 def view_party(party_id):
-    print('LOOOOKKKK EHRERER')
-    print(type(party_id))
+    #print('LOOOOKKKK EHRERER')
+    #print(type(party_id))
     party = Party.query.filter_by(id=party_id).first_or_404()
     songs = Song.query.filter_by(party_id=int(party_id)).all()
     form = AddASongForm()
@@ -164,16 +164,14 @@ def view_party(party_id):
 
     return render_template('party.html',form=form, party=party,party_id = party_id, songs=songs)
 
-# @app.route('/songs/<party_id>', methods=['GET', 'POST'])
-# @login_required
-# def add_song(party_id):
-#     form = AddASongForm()
-#     if form.validate_on_submit():
-#         song_data = {'owner_id': current_user.id, 'title':form.title.data,'artist': form.artist.data, 'party_id':party_id, 'vote_count':'1'}
-#         s = Song(song_data)
-#         db.session.add(p)
-#         db.session.commit()
-#         flash('Your song has been added to the Party')
-#         return redirect(url_for('view_party', party_id))
-#
-#     return render_template('party.html', party=party,party_id = party_id)
+#hacky way to upvote a song
+@app.route('/party/<int:party_id>/<int:song_id>', methods=['POST'])
+@login_required
+def song_vote(party_id, song_id):
+    song = Song.query.filter_by(party_id = party_id).filter_by(id=song_id).first()
+    #print('LOOK RIGHT THE FUCK HERE')
+    song.vote_count+=1
+    db.session.add(song)
+    db.session.commit()
+    flash('You voted for {}'.format(song.title))
+    redirect(url_for('view_party', party_id=party_id))
