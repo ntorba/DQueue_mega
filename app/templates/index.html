@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Hi, {{ current_user.username }}!</h1>
+    <h2> Here are some recent parties around you: </h2>
+    {% for party in parties %}
+    <table>
+      <tr valign="top">
+        <td><img src="{{ party.user.avatar(36) }}"></td>
+        <td>
+        <a href="{{ url_for('user', username=party.user.username) }}">
+            {{ party.user.username }}
+        </a>
+         Is throwing the <a href="{{ url_for('view_party', party_id=party.id) }}"><b>{{ party.title }}</b> </a>Party. It started at {{ party.created_at }}
+      </td>
+    </tr>
+  </table>
+  {% endfor %}
+  {% if prev_url %}
+  <a href="{{ prev_url }}">Newer posts</a>
+  {% endif %}
+  {% if next_url %}
+  <a href="{{ next_url }}">Older posts</a>
+  {% endif %}
+{% endblock %}

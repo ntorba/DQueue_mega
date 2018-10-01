@@ -1,0 +1,11 @@
+<table>
+        <tr valign="top">
+            <td><img src="{{ party.user.avatar(36) }}"></td>
+            <td>
+                <a href="{{ url_for('user', username=party.user.username) }}">
+                    {{ party.user.username }}
+                </a>
+                says:<br>{{ party.title }}
+            </td>
+        </tr>
+    </table>
