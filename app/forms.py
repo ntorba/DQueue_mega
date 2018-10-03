@@ -53,3 +53,8 @@ class AddASongForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     artist = StringField('Artist', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class UpVoteSongForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    artist = StringField('Artist', validators=[DataRequired()])
+    submit = SubmitField('Submit')

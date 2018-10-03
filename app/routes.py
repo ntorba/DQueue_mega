@@ -153,16 +153,20 @@ def view_party(party_id):
     #print(type(party_id))
     party = Party.query.filter_by(id=party_id).first_or_404()
     songs = Song.query.filter_by(party_id=int(party_id)).all()
-    form = AddASongForm()
-    if form.validate_on_submit():
-        song_data={'owner_id': current_user.id, 'title':form.title.data, 'artist': form.artist.data, 'party_id':party_id}
+    add_song_form = AddASongForm()
+    if add_song_form.validate_on_submit():
+        song_data={'owner_id': current_user.id, 'title':add_song_form.title.data, 'artist': add_song_form.artist.data, 'party_id':party_id}
         s = Song(song_data)
         db.session.add(s)
         db.session.commit()
         flash('Your song has been added to the Party')
         return redirect(url_for('view_party', party_id=party_id))
+    elif request.method == 'POST':
+        song = Song.query.filter_by(id=request.get("song_id"))
+        song = song.update({'vote_count': song.vote_count+1})
+        db.session.commit()
 
-    return render_template('party.html',form=form, party=party,party_id = party_id, songs=songs)
+    return render_template('party.html',add_song_form=add_song_form, party=party,party_id = party_id, songs=songs)
 
 #hacky way to upvote a song
 @app.route('/party/<int:party_id>/<int:song_id>', methods=['POST'])
