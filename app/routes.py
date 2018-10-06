@@ -1,5 +1,5 @@
 from app import app,db
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, StartAPartyForm, AddASongForm
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
@@ -161,21 +161,17 @@ def view_party(party_id):
         db.session.commit()
         flash('Your song has been added to the Party')
         return redirect(url_for('view_party', party_id=party_id))
-    elif request.method == 'POST':
-        song = Song.query.filter_by(id=request.get("song_id"))
-        song = song.update({'vote_count': song.vote_count+1})
-        db.session.commit()
 
     return render_template('party.html',add_song_form=add_song_form, party=party,party_id = party_id, songs=songs)
 
-#hacky way to upvote a song
-@app.route('/party/<int:party_id>/<int:song_id>', methods=['POST'])
-@login_required
-def song_vote(party_id, song_id):
-    song = Song.query.filter_by(party_id = party_id).filter_by(id=song_id).first()
-    #print('LOOK RIGHT THE FUCK HERE')
-    song.vote_count+=1
-    db.session.add(song)
-    db.session.commit()
-    flash('You voted for {}'.format(song.title))
-    redirect(url_for('view_party', party_id=party_id))
+
+@app.route('/party/json/<party_id>', methods=['GET'])
+def get_party_and_songs(party_id):
+    print('FUCK')
+    party = Party.query.filter_by(id=party_id).first_or_404()
+    songs = Song.query.filter_by(party_id=int(party_id)).all()
+    song_json = []
+    characters: [{song: "power ", artist: "kanye", addedBy: songs.User.username, voteCount: 1}]
+    for song in songs:
+        song_json.append({'song':song.title, 'artist':song.artist, 'addedBy': song.owner_id, 'voteCount':1})
+    return jsonify(song_json)

@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 #from flask_mail import Mail
 from flask_bootstrap import Bootstrap
+from flask_cors import CORS
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
@@ -16,6 +17,7 @@ migrate = Migrate(app,db)
 login = LoginManager(app)
 #mail = Mail(app)
 bootstrap = Bootstrap(app)
+CORS(app)
 
 login.login_view = 'login'
 
